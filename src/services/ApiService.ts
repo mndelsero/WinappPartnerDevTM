@@ -45,20 +45,20 @@ export default class ApiService {
 	// 	return data.near.filter((business: any) => !!business);
 	// }
 
-	async getProducts(token:string){
-	
-		   const response = await fetch(
-			   `${API_URL}/my-products`,
-			   {
-				   headers: {
-					   Authorization: `Bearer ${token}`,
-				   },
-			   },
-		   );
-		   const dataPrincipal = await response.json();
-		   
-		   console.log('data',dataPrincipal);		   
-		   return dataPrincipal;
+	async getProducts(token: string) {
+
+		const response = await fetch(
+			`${API_URL}/my-products`,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			},
+		);
+		const dataPrincipal = await response.json();
+
+		console.log('data', dataPrincipal);
+		return dataPrincipal;
 	}
 
 	// async getProduct(id: number, business_id: number) {
@@ -78,7 +78,7 @@ export default class ApiService {
 	// 	return null;
 	// }
 
-	async getProductsByCategory(token:string) {
+	async getProductsByCategory(token: string) {
 		const response = await fetch(
 			`${API_URL}/product/categories`,
 			{
@@ -88,7 +88,7 @@ export default class ApiService {
 			},
 		);
 		const dataPrincipal = await response.json();
-	
+
 		return dataPrincipal;
 	}
 
@@ -103,18 +103,18 @@ export default class ApiService {
 					},
 				},
 			);
-			 const result=await response.json()
-			 if (result.status === 'success') {
+			const result = await response.json()
+			if (result.status === 'success') {
 				const businessCategories = result.data.businessCategories;
-				console.log(businessCategories)
+
 				return businessCategories; // Devuelves el array de categorías
-			  } else {
+			} else {
 				throw new Error('No se pudieron obtener las categorías');
-			  }
-		
-			
+			}
+
+
 		} catch (error) {
-			
+
 			console.log(error);
 			throw error;
 		}
@@ -196,31 +196,84 @@ export default class ApiService {
 	// }
 
 	async getBussinessByUser(
-		 token:string,
+		token: string,
 	) {
-		try{
-		const response = await fetch(
-			`${API_URL}/business/me`,
-			{
-				headers: {
-					Authorization: `Bearer ${token}`,
+		try {
+			const response = await fetch(
+				`${API_URL}/business/me`,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
 				},
-			},
-		);
-		const dataPrincipal = await response.json();
-		
-		
-		return dataPrincipal;}
-		catch(error) {
-			
+			);
+			const dataPrincipal = await response.json();
+
+
+			return dataPrincipal;
+		}
+		catch (error) {
+
 			console.log(error);
 			throw error;
 		}
-			
-		
-		
-		
+
+
+
+
 	}
+
+
+
+	async uploadDocuments(documents: FormData, token: string): Promise<BusinessResponse> {
+		try {
+			const near = await fetch(
+				`${API_URL}/business/document`,
+				{
+					method: "POST",
+					headers: { Authorization: `Bearer ${token}` },
+					body: documents,
+				},
+			);
+			console.log(near.status)
+			if (near.status === 201) {
+				console.log("Documentos subidos")
+			}
+			const data = await near.json();
+			return data.near;
+		} catch (error) {
+			console.log(error)
+			throw error
+		}
+	}
+
+
+	async createBusiness(business: FormData, token: string): Promise<BusinessResponse> {
+		try {
+			const near = await fetch(
+				`${API_URL}/business`,
+				{
+					method: "POST",
+					headers: { Authorization: `Bearer ${token}` },
+					body:
+						business,
+				},
+			);
+
+			console.log(near.status)
+			if (near.status === 201) {
+				console.log("negocio creado ")
+			}
+			const data = await near.json();
+		
+
+			return data;
+		} catch (error) {
+			console.log(error)
+			throw error
+		}
+	}
+
 
 	// async createProduct(product: ProductCreate, business_id: number) {
 	// 	const { data, error } = await this.client

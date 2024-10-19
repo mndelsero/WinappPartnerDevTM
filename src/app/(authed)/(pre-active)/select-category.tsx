@@ -24,39 +24,49 @@ import LoadingScreen from "@/components/LoadingScreen";
 import Button from "@/components/Button";
 import InputScrollView from "react-native-input-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SelectFileButton } from "@/components/SelectFileButton";
+import SelectFileButton from "@/components/SelectFileButton";
+import Input from "@/components/Input";
+import { useFormik } from "formik";
+import { DocumentPickerResult } from "expo-document-picker";
 
-const schema = yup.object().shape({
-	email: yup
-		.string()
-		.email("El correo es invalido")
-		.required("El correo es requerido"),
-	password: yup
-		.string()
-		.min(8, "La contraseña debe tener almenos 8 caracteres")
-		.required("La contraseña es requerida"),
-});
 
-interface SignInData {
-	email: string;
-	password: string;
+
+
+interface FileState {
+	uri: string;
+	name: string;
+	mimeType: string;
+}
+
+interface SelectedFiles {
+	logo: FileState | null;
+	banner: FileState | null;
+	bancary: FileState | null;
+	rfc: FileState | null;
+	act: FileState | null;
+	power: FileState | null;
 }
 
 export default function SelectCategory() {
 
 
 	const router = useRouter();
-	// const categories = [
-	// 	{ key: '1', value: 'Electronics' },
-	// 	{ key: '2', value: 'Clothing' },
-	// 	{ key: '3', value: 'Books' },
-	// 	// Agrega más opciones aquí
-	// ];
+	const [selectedFiles, setSelectedFiles] = useState<SelectedFiles>({
+		logo: null,
+		banner: null,
+		bancary: null,
+		rfc: null,
+		act: null,
+		power: null,
+	});
 
-	// useEffect(() => {
-	// 	router.push("/(authed)/(pre-active)/create-business");
-	// }, []);
 
+	const [selectedAttourneyPower, setselectedAttourneyPower] = React.useState(null);
+	const [selectedConstitutiveAct, setselectedConstitutiveAct] = React.useState(null);
+	const [selectedRFC, setselectedRFC] = React.useState(null);
+	const [selectedBancaryCertificate, setselectedBancaryCertificate] = React.useState(null);
+	const [selectedLogo, setselectedLogo] = React.useState(null);
+	const [selectedBanner, setselectedBanner] = React.useState(null);
 	const { setBusiness } = useGlobalStore();
 	const [loading, setLoading] = React.useState(false);
 	const { user, isLoaded, isSignedIn } = useUser();
@@ -81,7 +91,7 @@ export default function SelectCategory() {
 			}
 			const service = new ApiService();
 			const data = await service.getBusinessCategories(token);
-			console.log("Datos de categorías obtenidos:", data);
+
 			const categories: any = data.map((category: any) => ({
 				key: category.id,
 				value: category.name,
@@ -92,12 +102,12 @@ export default function SelectCategory() {
 			return categories
 		}, {
 		onError: (err) => {
-			console.log("Error al cargar categorías:", err);
+
 		},
 	}
 	);
 	if (isError) {
-		console.log("Error en el componente:", error);
+
 	}
 
 	useEffect(() => {
@@ -154,7 +164,6 @@ export default function SelectCategory() {
 
 			if (!isLoaded) {
 				setLoading(false)
-				console.log("Usuario no cargado");
 				return;
 			} else {
 				setLoading(true)
@@ -162,9 +171,7 @@ export default function SelectCategory() {
 			}
 
 			if (isSignedIn) {
-				console.log("Usuario está logueado");
 				if (user.unsafeMetadata?.role !== "partner") {
-					console.log("Rol del usuario no es 'partner', deslogueando...");
 					signOut();
 					return;
 				}
@@ -173,8 +180,119 @@ export default function SelectCategory() {
 	}, [isLoaded]);
 
 
+	const { handleBlur, handleChange, handleSubmit, errors, values, isValid } =
+		useFormik({
+			initialValues: {
+				name: "",
+				description: "",
+				address: "",
+				longitude: "",
+				latitude: "",
+				categoryId: "",
+				phone: "",
+				workingTime: "",
+			},
+
+			onSubmit: async (values) => {
+				await handleCreate(values);
+			},
+		});
+
+	const handleFileSelect = (file: FileState, type: keyof SelectedFiles) => {
+		setSelectedFiles((prevFiles) => ({
+			...prevFiles,
+			[type]: file,
+		}));
+	};
 
 
+
+	const handleCreate = async (values: any) => {
+
+		const token = await getToken();
+
+		if (!token) {
+
+			return [];
+		}
+		const formDataBusiness = new FormData();
+		formDataBusiness.append("name", values.name);
+		formDataBusiness.append("description", values.description);
+		formDataBusiness.append("address", values.address);
+		formDataBusiness.append("longitude", "-100.33215841881625");
+		formDataBusiness.append("latitude", "25.667754251662767");
+		formDataBusiness.append("categoryId", selected[0]);
+		formDataBusiness.append("phone", values.phone);
+		formDataBusiness.append("workingTime", values.workingTime);
+
+		if (selectedFiles.logo) {
+			formDataBusiness.append("businessLogo", {
+				uri: selectedFiles.logo.uri,
+				name: selectedFiles.logo.name,
+				type: selectedFiles.logo.mimeType,
+			} as any);
+		}
+
+		if (selectedFiles.banner) {
+			formDataBusiness.append("businessBanner", {
+				uri: selectedFiles.banner.uri,
+				name: selectedFiles.banner.name,
+				type: selectedFiles.banner.mimeType,
+			} as any);
+		}
+
+
+		try {
+			const service = new ApiService();
+			const data = await service.createBusiness(formDataBusiness, token);
+			return data
+		} catch (e) {
+			console.log(e);
+
+			setLoading(false);
+		}
+
+
+		const formDataDocs = new FormData();
+		if (selectedFiles.bancary) {
+			formDataDocs.append("bankingCertified", {
+				uri: selectedFiles.bancary.uri,
+				name: selectedFiles.bancary.name,
+				type: selectedFiles.bancary.mimeType,
+			} as any);
+		}
+		if (selectedFiles.rfc) {
+			formDataDocs.append("dni", {
+				uri: selectedFiles.rfc.uri,
+				name: selectedFiles.rfc.name,
+				type: selectedFiles.rfc.mimeType,
+			} as any);
+		}
+		if (selectedFiles.act) {
+			formDataDocs.append("constitutiveAct", {
+				uri: selectedFiles.act.uri,
+				name: selectedFiles.act.name,
+				type: selectedFiles.act.mimeType,
+			} as any);
+		}
+		if (selectedFiles.power) {
+			formDataDocs.append("attorneyPower", {
+				uri: selectedFiles.power.uri,
+				name: selectedFiles.power.name,
+				type: selectedFiles.power.mimeType,
+			} as any);
+		}
+
+
+
+		const service = new ApiService();
+		const data = await service.uploadDocuments(formDataDocs, token);
+
+		setLoading(false)
+
+
+
+	}
 
 	return (
 
@@ -208,10 +326,11 @@ export default function SelectCategory() {
 										dropdownTextStyles={tw`text-base tablet:text-2xl`}
 										dropdownItemStyles={tw`text-xl tablet:text-2xl`}
 										setSelected={(val: any) => {
-											console.log("Categorías seleccionadas:", val);
+
 											setSelected(val);
+
 										}}
-										data={categories||[]}
+										data={categories || []}
 										save="key"
 										label="Categorias"
 										searchPlaceholder="Buscar Categoria"
@@ -223,9 +342,110 @@ export default function SelectCategory() {
 							<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
 								Subir logo de comercio
 							</Text>
+
+
 							<View style={tw`flex justify-center items-center py-5`}>
-								<SelectFileButton />
+								<SelectFileButton
+									label="Seleccionar Logo" onFileSelect={(file) => handleFileSelect(file, 'logo')}
+
+								/>
 							</View>
+							<View style={tw`flex justify-center items-center py-5`}>
+
+								<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
+									Elige el nombre de tu Comercio
+								</Text>
+								<Input
+									placeholder="Nombre"
+									onFocus={handleBlur("code")}
+									onChangeText={handleChange("name")}
+									value={values.name}
+									error={!!errors.name}
+									errorMessage={errors.name}
+
+								/>
+							</View>
+
+							<View style={tw`flex justify-center items-center py-5`}>
+
+								<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
+									Escribe una descripcion de tu comercio
+								</Text>
+								<Input
+									placeholder="Descripcion"
+									onFocus={handleBlur("code")}
+									onChangeText={handleChange("description")}
+									value={values.description}
+									error={!!errors.description}
+									errorMessage={errors.description}
+
+								/>
+							</View>
+
+
+
+							<View style={tw`flex justify-center items-center py-5`}>
+
+								<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
+									Escribe la direccion fisica de tu Comercio
+								</Text>
+								<Input
+									placeholder="Direccion"
+									onFocus={handleBlur("code")}
+									onChangeText={handleChange("address")}
+									value={values.address}
+									error={!!errors.address}
+									errorMessage={errors.address}
+
+								/>
+							</View>
+
+							<View style={tw`flex justify-center items-center py-5`}>
+
+								<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
+									Escribe el telefono del Comercio
+								</Text>
+								<Input
+									placeholder="Telefono"
+									onFocus={handleBlur("code")}
+									onChangeText={handleChange("phone")}
+									value={values.phone}
+									error={!!errors.phone}
+									errorMessage={errors.phone}
+
+								/>
+							</View>
+
+
+							<View style={tw`flex justify-center items-center py-5`}>
+
+								<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
+									Escribe el horario del comercio
+								</Text>
+								<Input
+									placeholder="Horario"
+									onFocus={handleBlur("code")}
+									onChangeText={handleChange("workingTime")}
+									value={values.workingTime}
+									error={!!errors.workingTime}
+									errorMessage={errors.workingTime}
+
+								/>
+							</View>
+
+							<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
+								Subir Banner de tu Comercio
+							</Text>
+
+
+							<View style={tw`flex justify-center items-center py-5`}>
+								<SelectFileButton
+									label="Seleccionar Logo" onFileSelect={(file) => handleFileSelect(file, 'banner')}
+
+
+								/>
+							</View>
+
 							<Text style={tw`text-sm tablet:text-xl text-gray-900 my-4`}>
 								Subir documentos para ser evaluados por el administrador
 							</Text>
@@ -233,27 +453,39 @@ export default function SelectCategory() {
 								Certificado Bancario
 							</Text>
 							<View style={tw`flex justify-center items-center py-2`}>
-								<SelectFileButton />
+								<SelectFileButton
+									label="Seleccionar Logo" onFileSelect={(file) => handleFileSelect(file, 'bancary')}
+
+								/>
 							</View>
 
 							<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
 								RFC
 							</Text>
 							<View style={tw`flex justify-center items-center py-2`}>
-								<SelectFileButton />
+								<SelectFileButton
+									label="Seleccionar Logo" onFileSelect={(file) => handleFileSelect(file, 'rfc')}
+
+								/>
 							</View>
 							<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
 								Acta constitutiva
 							</Text>
 							<View style={tw`flex justify-center items-center py-2`}>
-								<SelectFileButton />
+								<SelectFileButton
+									label="Seleccionar Logo" onFileSelect={(file) => handleFileSelect(file, 'act')}
+
+								/>
 							</View>
 
 							<Text style={tw`text-sm tablet:text-xl text-gray-500 mt-2`}>
 								Poder del representante legal
 							</Text>
 							<View style={tw`flex justify-center items-center py-2`}>
-								<SelectFileButton />
+								<SelectFileButton
+									label="Seleccionar Logo" onFileSelect={(file) => handleFileSelect(file, 'power')}
+
+								/>
 							</View>
 							<View style={tw`mt-4 tablet:mt-8 flex  items-end`}>
 								<TouchableOpacity
@@ -262,19 +494,26 @@ export default function SelectCategory() {
 
 									onPress={() => {
 										if (selected.length === 0) {
-											console.log("No se seleccionaron categorías");
 											toast.error("Seleccione al menos una categoria");
 										} else {
 											console.log("Categorías enviadas:", selected);
-											setCategories(selected);
+
+											handleSubmit()
+
 										}
 
 
-										// router.push("/(authed)/(pre-active)/create-business");
-										// handleSubmit();
+
 									}}
-									style={tw`bg-primary rounded-full w-12 h-12 tablet:w-20 tablet:h-20 flex items-center justify-center`}
+									style={tw`flex flex-row bg-primary rounded-full px-1rem h-12 tablet:w-20 tablet:h-20 flex items-center justify-center`}
 								>
+
+
+									<Text
+										style={tw`text-1.5rem text-white`}
+									>
+										Registarse
+									</Text>
 									<Ionicons
 										color={tw.color("white")}
 										name="chevron-forward"
