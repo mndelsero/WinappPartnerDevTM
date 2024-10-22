@@ -20,8 +20,8 @@ interface OrderProps {
     product: string;
     quantity: number;
   }[];
-  hasUsedCode: boolean;
-  type: number;
+  // hasUsedCode: boolean;
+  // type: number;
   discount?: number;
   status: Status;
   date: string;
@@ -39,8 +39,7 @@ export default function Order({
   orderId,
   orderTotal,
   orderDetail = [],
-  hasUsedCode,
-  type,
+
   discount,
   date,
   status,
@@ -58,8 +57,12 @@ export default function Order({
     },
     mutationFn: async () => {
       const token = (await getToken()) ?? "";
-      const apiService = new ApiService(token);
-      await apiService.changeStatusOrder(orderId, Status.Cancelled);
+const status={
+  "status":"Cancelled"//"In progress" //"Done"//"Cancelled"//"Delivered"
+}
+
+      const apiService = new ApiService();
+      await apiService.updateOrder(orderId, status, token);
     },
     onSuccess: () => {
       toast.success("Pedido actualizado a cancelado");
@@ -67,6 +70,8 @@ export default function Order({
       refetch?.();
     },
   });
+
+
   const prepare = useMutation({
     mutationKey: "prepareOrder",
     onSuccess: () => {
@@ -79,7 +84,7 @@ export default function Order({
     },
     mutationFn: async () => {
       const token = (await getToken()) ?? "";
-      const apiService = new ApiService(token);
+      const apiService = new ApiService();
       await apiService.changeStatusOrder(orderId, Status.Preparing);
     },
   });
@@ -96,10 +101,13 @@ export default function Order({
     },
     mutationFn: async () => {
       const token = (await getToken()) ?? "";
-      const apiService = new ApiService(token);
+      const apiService = new ApiService();
       await apiService.changeStatusOrder(orderId, Status.ForPickup);
     },
   });
+
+
+
   const completed = useMutation({
     mutationKey: "completedOrder",
     onSuccess: () => {
@@ -118,6 +126,9 @@ export default function Order({
       });
     },
   });
+
+
+
 
   return (
     <View style={tw`w-full   `}>
@@ -194,6 +205,46 @@ export default function Order({
                     >
                       <Text style={tw`text-white font-bold tablet:text-xl`}>
                         Preparar
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                {status === Status.Preparing && (
+                  <View style={tw`flex-row justify-center items-center gap-3`}>
+                    <TouchableOpacity
+                      activeOpacity={0.8}
+                      onPress={() => {
+                        setShowDialogCancel(true);
+                      }}
+                      style={tw`bg-red-400 rounded-2xl px-4 py-2 mt-4 self-center z-10 elevation-4 shadow-2xl tablet:px-6 tablet:py-3 tablet:rounded-3xl`}
+                    >
+                      <Text style={tw`text-white font-bold tablet:text-xl`}>
+                        Cancelar
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowDialogPrepare(true);
+                      }}
+                      style={tw`bg-green-500 rounded-2xl px-4 py-2 mt-4 self-center z-10 elevation-4 shadow-2xl tablet:px-6 tablet:py-3 tablet:rounded-3xl`}
+                    >
+                      <Text style={tw`text-white font-bold tablet:text-xl`}>
+                        Terminado
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                 {status === Status.ForPickup && (
+                  <View style={tw`flex-row justify-center items-center gap-3`}>
+                   
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowDialogPrepare(true);
+                      }}
+                      style={tw`bg-green-500 rounded-2xl px-4 py-2 mt-4 self-center z-10 elevation-4 shadow-2xl tablet:px-6 tablet:py-3 tablet:rounded-3xl`}
+                    >
+                      <Text style={tw`text-white font-bold tablet:text-xl`}>
+                        Entregar
                       </Text>
                     </TouchableOpacity>
                   </View>

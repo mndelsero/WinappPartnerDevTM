@@ -11,18 +11,18 @@ import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useQuery } from "react-query";
 
-export default function preparing() {
+export default function takeaway() {
 	const { getToken } = useAuth();
 	const { business } = useGlobalStore();
 	const segments = useSegments();
 	const { data: data, isFetching, isError, refetch } = useQuery({
-		queryKey: "PreparingOrders",
+		queryKey: "Takeaway",
 		queryFn: async () => {
 			const token = (await getToken()) ?? "";
 			const apiService = new ApiService();
 
 
-			let orders = await apiService.getOrdersByStatus("In progress", token);
+			let orders = await apiService.getOrdersByStatus("Done", token);
 			const data = orders
 			console.log(data)
 			return data

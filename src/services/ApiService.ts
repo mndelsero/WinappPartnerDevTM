@@ -265,7 +265,7 @@ export default class ApiService {
 				console.log("negocio creado ")
 			}
 			const data = await near.json();
-		
+
 
 			return data;
 		} catch (error) {
@@ -495,19 +495,49 @@ export default class ApiService {
 	// 	).then((res) => res.json());
 	// }
 
-	// async changeStatusOrder(order_id: string, status: Status) {
-	// 	return fetch(
-	// 		"https://nskabxlhjggmvpxjqeie.supabase.co/functions/v1/winap-update-orders",
-	// 		{
-	// 			method: "POST",
-	// 			headers: {
-	// 				Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-	// 				"Content-Type": "application/json",
-	// 			},
-	// 			body: JSON.stringify({ order_id, status }),
-	// 		},
-	// 	).then((res) => res.json());
-	// }
+	async getOrdersByStatus(status: string, token: string) {
+		try {
+			const near = await fetch(
+				`${API_URL}/business/orders?status=${status}`,
+				{
+					method: "GET",
+					headers: { Authorization: `Bearer ${token}` },
+
+				},
+			);
+
+			console.log(near.status)
+			const result = await near.json()
+			const orders = result.data.orders
+			return orders
+			console.log(orders)
+		} catch (error) {
+			console.log(error)
+			throw error
+		}
+	}
+
+	async updateOrder(order_id: string, status: any, token: string) {
+		try {
+			const near = await fetch(
+				`${API_URL}/order?id=${order_id}`,
+				{
+					method: "PUT",
+					headers: { Authorization: `Bearer ${token}` },
+					body: status,
+				},
+			);
+
+			console.log(near.status)
+			const result = await near.json()
+			console.log(result)
+		return result
+			
+		} catch (error) {
+			console.log(error)
+			throw error
+		}
+	}
 
 	// async deleteCodes(code_id: number, business_id: number) {
 	// 	const { data, error } = await this.client

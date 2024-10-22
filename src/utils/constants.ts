@@ -15,11 +15,11 @@ export const IS_IOS = Platform.OS === "ios";
 export const ENVIROMENT = process.env.EXPO_PUBLIC_ENV || "development";
 
 export enum Status {
-	Pending = 1,
-	Preparing = 2,
-	ForPickup = 3,
-	Completed = 4,
-	Cancelled = 5,
+	Pending = "Payment pending",
+	Preparing = "In progress",
+	ForPickup = "Done",
+	Completed = "Delivered",
+	Cancelled = "Cancelled",
 }
 
 export enum Types {

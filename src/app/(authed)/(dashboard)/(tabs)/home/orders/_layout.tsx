@@ -34,6 +34,21 @@ export default function _layout() {
 					},
 				}}
 			/>
+				<MaterialTopTabs.Screen
+				name="takeaway"
+				options={{
+					title: "Retirar",
+					tabBarActiveTintColor: tw.color("primary"),
+					tabBarInactiveTintColor: tw.color("gray-500"),
+					tabBarLabelStyle: {
+						fontSize: Dimensions.get("window").width >= 1024 ? 20 : 12,
+					},
+					lazy: true,
+					tabBarIndicatorStyle: {
+						backgroundColor: tw.color("primary"),
+					},
+				}}
+			/>
 		</MaterialTopTabs>
 	);
 }

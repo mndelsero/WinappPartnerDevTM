@@ -22,7 +22,7 @@ const data = [
     id: 2,
     name: "Pedidos",
     icon: "shopping-cart",
-    href: "(authed)/(dashboard)/(tabs)/home/orders/preparing",
+    href: "(authed)/(dashboard)/(tabs)/home/orders/pending",
   },
   {
     id: 3,
