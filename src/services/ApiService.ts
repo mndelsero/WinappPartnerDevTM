@@ -506,34 +506,36 @@ export default class ApiService {
 				},
 			);
 
-			console.log(near.status)
 			const result = await near.json()
 			const orders = result.data.orders
 			return orders
-			console.log(orders)
+	
 		} catch (error) {
 			console.log(error)
 			throw error
 		}
 	}
 
-	async updateOrder(order_id: string, status: any, token: string) {
+	async updateOrder(orderId: string, status: any, token: string) {
 		try {
 			const near = await fetch(
-				`${API_URL}/order?id=${order_id}`,
+				`${API_URL}/order?id=${orderId}`,
 				{
 					method: "PUT",
-					headers: { Authorization: `Bearer ${token}` },
-					body: status,
+					headers: { Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json", },
+					body: JSON.stringify(status),
 				},
 			);
 
 			console.log(near.status)
+		
 			const result = await near.json()
-			console.log(result)
+			console.log(status,result)
 		return result
 			
 		} catch (error) {
+			
 			console.log(error)
 			throw error
 		}

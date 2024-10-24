@@ -5,8 +5,9 @@ import ApiService from "@/services/ApiService";
 import useGlobalStore from "@/store/useGlobalStore";
 import { Status } from "@/utils/constants";
 import { useAuth } from "@clerk/clerk-expo";
+import { TouchableOpacity } from "@gorhom/bottom-sheet";
 import { useSegments } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useQuery } from "react-query";
@@ -15,6 +16,7 @@ export default function preparing() {
 	const { getToken } = useAuth();
 	const { business } = useGlobalStore();
 	const segments = useSegments();
+	const[ordersData, setOrdersData]=useState([])
 	const { data: data, isFetching, isError, refetch } = useQuery({
 		queryKey: "PreparingOrders",
 		queryFn: async () => {
@@ -24,15 +26,33 @@ export default function preparing() {
 
 			let orders = await apiService.getOrdersByStatus("In progress", token);
 			const data = orders
-			console.log(data)
+			setOrdersData(data)
 			return data
 		},
 	});
 
+	useEffect(() => {
+		
+		refetch()
+	}, [data]);
 
+	useEffect(() => {
+		
+		refetch()
+	}, []);
 
-	console.log(data);
-	return (
+	
+	return (<>
+		<TouchableOpacity
+				onPress={() => {
+					refetch()
+				}}
+				style={tw`bg-blue-500 rounded-2xl px-4 py-2 mt-4 self-center z-10 elevation-4 shadow-2xl tablet:px-6 tablet:py-3 tablet:rounded-3xl`}
+			>
+				<Text style={tw`text-white font-bold tablet:text-xl`}>
+					Recargar
+				</Text>
+			</TouchableOpacity>
 		<ScrollView style={tw`px-2  mt-4 flex-1`}>
 		<View style={tw`px-2 flex gap-4`}>
 				<WithLoading isLoading={isFetching} error={isError}>
@@ -42,10 +62,10 @@ export default function preparing() {
 							No hay pedidos pendientes
 						</Text>
 					)}
-					{data?.map((order:any) => (
+					{ordersData?.map((order:any) => (
 							<Order
 								key={order.id}
-								clientName={order.subscriptionId}
+								clientName={order.client.clientName}
 								orderId={order.id}
 								orderTotal={order.totalPrice}
 								orderDetail={order.productOrders.map((detail:any) => ({
@@ -71,5 +91,5 @@ export default function preparing() {
 				</WithLoading>
 			</View>
 		</ScrollView>
-	);
+		</>);
 }

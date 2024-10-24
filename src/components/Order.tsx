@@ -58,9 +58,9 @@ export default function Order({
     mutationFn: async () => {
       const token = (await getToken()) ?? "";
 const status={
-  "status":"Cancelled"//"In progress" //"Done"//"Cancelled"//"Delivered"
+  status:"Cancelled"//"In progress" //"Done"//"Cancelled"//"Delivered"
 }
-
+console.log(orderId)
       const apiService = new ApiService();
       await apiService.updateOrder(orderId, status, token);
     },
@@ -74,35 +74,43 @@ const status={
 
   const prepare = useMutation({
     mutationKey: "prepareOrder",
-    onSuccess: () => {
-      toast.success("Pedido actualizado a preparando");
-      setShowDialogPrepare(false);
-      refetch?.();
-    },
+   
     onError: () => {
       toast.error("Error al actualizar el pedido");
     },
     mutationFn: async () => {
       const token = (await getToken()) ?? "";
-      const apiService = new ApiService();
-      await apiService.changeStatusOrder(orderId, Status.Preparing);
+      const status={
+        status:"In progress"//"In progress" //"Done"//"Cancelled"//"Delivered"
+      }
+      
+            const apiService = new ApiService();
+            await apiService.updateOrder(orderId, status, token);
+    }, onSuccess: () => {
+      toast.success("Pedido actualizado a preparando");
+      setShowDialogPrepare(false);
+      refetch?.();
     },
   });
 
   const ready = useMutation({
     mutationKey: "readyOrder",
-    onSuccess: () => {
-      toast.success("Pedido actualizado a listo para retirar");
-      setShowDialogReady(false);
-      refetch?.();
-    },
+   
     onError: () => {
       toast.error("Error al actualizar el pedido");
     },
     mutationFn: async () => {
       const token = (await getToken()) ?? "";
-      const apiService = new ApiService();
-      await apiService.changeStatusOrder(orderId, Status.ForPickup);
+      const status={
+        status:"Done"//"In progress" //"Done"//"Cancelled"//"Delivered"
+      }
+      
+            const apiService = new ApiService();
+            await apiService.updateOrder(orderId, status, token);
+    }, onSuccess: () => {
+      toast.success("Pedido actualizado a listo para retirar");
+      setShowDialogReady(false);
+      refetch?.();
     },
   });
 
@@ -110,20 +118,22 @@ const status={
 
   const completed = useMutation({
     mutationKey: "completedOrder",
-    onSuccess: () => {
-      toast.success("Pedido actualizado a listo para retirar");
-      setShowDialogReady(false);
-      refetch?.();
-    },
+   
     onError: () => {
       toast.error("Error al actualizar el pedido");
     },
     mutationFn: async () => {
       const token = (await getToken()) ?? "";
-      const apiService = new ApiService(token);
-      await apiService.changeStatusOrder(orderId, 4).then((res) => {
-        console.log("completed", res);
-      });
+      const status={
+        status:"Delivered"//"In progress" //"Done"//"Cancelled"//"Delivered"
+      }
+      
+            const apiService = new ApiService();
+            await apiService.updateOrder(orderId, status, token);
+    }, onSuccess: () => {
+      toast.success("Pedido actualizado a listo para retirar");
+      setShowDialogCompleted(false);
+      refetch?.();
     },
   });
 
@@ -135,8 +145,7 @@ const status={
       <View
         style={tw`rounded-xl bg-white px-3 py-2   shadow-sm  pb-4 tablet:pb-8 tablet:py-4  tablet:rounded-2xl  overflow-hidden`}
       >
-        <View style={tw`flex-row`}>
-          <View style={tw` w-2/5`}>
+        <View style={tw` w-5/5`}>
             <Text
               style={tw`text-gray-400 font-bold tablet:text-3xl text-xl mb-2`}
             >
@@ -155,7 +164,9 @@ const status={
               ))}
             </View>
           </View>
-          <View style={tw` w-3/5 flex-row justify-between`}>
+        <View style={tw`flex-row`}>
+          
+          <View style={tw` w-5/5 flex-row justify-between`}>
             <View style={tw`w-full  `}>
               <View style={tw`flex-row justify-between`}>
                 <View style={tw`w-1/2`}>
@@ -165,7 +176,7 @@ const status={
                     id de pedido
                   </Text>
                   <Text
-                    style={tw`text-gray-500 font-light text-lg tablet:text-2xl `}
+                    style={tw`text-gray-500 font-light text-sm tablet:text-2xl `}
                   >
                     {orderId}
                   </Text>
@@ -224,7 +235,7 @@ const status={
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
-                        setShowDialogPrepare(true);
+                        setShowDialogReady(true);
                       }}
                       style={tw`bg-green-500 rounded-2xl px-4 py-2 mt-4 self-center z-10 elevation-4 shadow-2xl tablet:px-6 tablet:py-3 tablet:rounded-3xl`}
                     >
@@ -239,7 +250,7 @@ const status={
                    
                     <TouchableOpacity
                       onPress={() => {
-                        setShowDialogPrepare(true);
+                        setShowDialogCompleted(true);
                       }}
                       style={tw`bg-green-500 rounded-2xl px-4 py-2 mt-4 self-center z-10 elevation-4 shadow-2xl tablet:px-6 tablet:py-3 tablet:rounded-3xl`}
                     >

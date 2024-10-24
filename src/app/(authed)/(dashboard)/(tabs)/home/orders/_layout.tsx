@@ -4,6 +4,8 @@ import React from "react";
 import { Dimensions } from "react-native";
 
 export default function _layout() {
+
+	
 	return (
 		<MaterialTopTabs>
 			<MaterialTopTabs.Screen
