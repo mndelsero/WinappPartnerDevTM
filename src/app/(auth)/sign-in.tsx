@@ -11,6 +11,7 @@ import { useFormik } from "formik";
 import { ENVIROMENT } from "@/utils/constants";
 import ApiService from "@/services/ApiService";
 import Button from "@/components/Button";
+import useGlobalStore from "@/store/useGlobalStore";
 const schema = yup.object().shape({
   email: yup
     .string()
@@ -33,7 +34,7 @@ export default function SignInScreen() {
   const router = useRouter();
   const { getToken, isSignedIn, signOut } = useAuth();
   const { user } = useUser();
-
+  const { setBusiness } = useGlobalStore();
 
   const {
     handleBlur,
@@ -57,47 +58,74 @@ export default function SignInScreen() {
   const onSubmit = async (data: SignInData) => {
     console.log(data.email)
     console.log(data.password)
-    if (isSignedIn){
-     
-router.push("/(authed)/(pre-active)/select-category")
-    }else{
+    if (isSignedIn) {
+
+      const token = await getToken();
+      if (!token) {
+
+        return;
+      }
+      const apiService = new ApiService();
+      const businessData = await apiService.getBussinessByUser(token);
+
+
+      if (businessData && businessData.status === "success") {
+        const { business } = businessData.data;
+
+        if (business) {
+          if (business.status === "Acepted") {
+            // TODO
+            setBusiness(business);
+            router.replace("/(authed)/(dashboard)/(tabs)/home");
+            return;
+          }
+          router.push("/(authed)/(pre-active)/revision");
+          return;
+        }
+
+      } else {
+        setLoading(false);
+        router.push("/(authed)/(pre-active)/select-category")
+      }
+
+
+
+
+
+    } else {
       try {
         setLoading(true);
-  
+
         if (!isLoaded) {
           return;
         }
-  
-  
-  
+
+
+
+
+
         const result = await signIn.create({
-  
+
           identifier: data.email,
           password: data.password,
         });
-  
-  
-  
-  
         if (result?.status === "complete") {
-  
+
           toast.success("Sesión iniciada con éxito");
           await setActive({ session: result.createdSessionId });
-  
           setLoading(false);
           router.push("/(authed)/(pre-active)/select-category");
           return;
         }
       } catch (error) {
         throw error
-        console.log(JSON.stringify(error));
-        toast.error("Creedenciales incorrectas");
-        setLoading(false);
+
       }
     }
   };
 
- 
+
+
 
   return (
     <View style={[tw`bg-white h-full flex justify-between`]}>

@@ -13,12 +13,12 @@ export default function AuthedLayout() {
 		<>
 			<SignedIn>
 				<Stack>
-					<Stack.Screen
+					{/* <Stack.Screen
 						name="(pre-active)/create-business"
 						options={{
 							headerShown: false,
 						}}
-					/>
+					/> */}
 					<Stack.Screen
 						name="(pre-active)/select-category"
 						options={{

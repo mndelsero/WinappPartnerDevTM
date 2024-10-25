@@ -148,8 +148,10 @@ export default function SignUpScreen() {
         }
         setLoading(true);
         const completeSignUp = await signUp.attemptEmailAddressVerification({
+          
           code: value,
         });
+        console.log(completeSignUp)
         if (completeSignUp.status !== "complete") {
           toast.error("Codigo incorrecto");
           return;

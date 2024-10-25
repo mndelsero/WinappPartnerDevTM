@@ -7,7 +7,7 @@ import { useAuth } from "@clerk/clerk-expo";
 import HomeHeader from "@/components/HomeHeader";
 import ButtonHome from "@/components/ButtonHome";
 import { Feather } from "@expo/vector-icons";
-import {  Stack, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import DashboardHeader from "@/components/DashboardHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -85,62 +85,67 @@ export default function Index() {
   return (
     <SafeAreaView >
 
-    <Stack.Screen
-      options={{
-        headerShown: false,
-      }}
-    />
-   <View style={tw`h-full bg-background px-4`}>
-  <View style={tw`flex  `}>
-    <FlatList
-      style={tw`w-full mx-auto h-full `}
-      ListHeaderComponent={<HomeHeader />}
-      data={data}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={Dimensions.get("window").width >= 1024 ? 3 : 1}
-      renderItem={({ item, index }) => {
-        const width = Dimensions.get("window").width;
-        const column = "width" in item ? item.width : "w-full";
-        const marginTop = index != 4 ? "mt-0" : "mt-16";
-        const borderRadius = (index === 0 || index === 4) ? "rounded-t-2xl" : (index === 3 || index === 6) ? "rounded-b-lg" : "";
-        const iconSize = width >= 1024 ? 35 : (width >= 768 ? 30 : 20); // Tamaño del icono basado en el ancho de la pantalla
-        const padding = width >= 1024 ? "py-10" : (width >= 768 ? "py-10" : "py-3"); // Padding basado en el ancho de la pantalla
-        return (
-          <View
-            style={tw`$flex flex-column mt-3rem  bg-white justify-start items-start mx-auto p-0`}
-          >
-            {item.icon ? (
-              <ButtonHome
-                text={item.name}
-                icon={() => {
-                  return (
-                    <Feather name={item.icon} size={iconSize} style={tw`text-primary ml-3 mr-3`} />
-                  );
-                }}
-                onPress={() => {
-                  if (item.href) {
-                    router.push(item.href);
-                  }
-                }}
-              />
-            ) : (
-              <ButtonHome
-                isImage
-                text={item.name}
-                icon={item.image}
-                onPress={() => {
-                  if (item.href) {
-                    router.push(item.href);
-                  }
-                }}
-              />
-            )}
-          </View>
-        );
-      }}
-    />
-  </View>
-</View>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      <View style={tw`h-full bg-background px-4`}>
+        <View style={tw`flex   `}>
+          <FlatList
+            style={tw`w-full mx-auto h-full mb-1 `}
+            ListHeaderComponent={<HomeHeader />}
+            data={data}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={Dimensions.get("window").width >= 1024 ? 3 : 1}
+            renderItem={({ item, index }) => {
+              const width = Dimensions.get("window").width;
+              const column = "width" in item ? item.width : "w-full";
+              const marginTop = index != 4 ? "mt-0" : "mt-16";
+              const borderRadius = (index === 0 || index === 4) ? "rounded-t-1rem" : (index === 3 || index === 6) ? "rounded-b-lg" : "";
+              const iconSize = width >= 1024 ? 35 : (width >= 768 ? 30 : 30); // Tamaño del icono basado en el ancho de la pantalla
+              const padding = width >= 1024 ? "py-10" : (width >= 768 ? "py-10" : "py-3"); // Padding basado en el ancho de la pantalla
+              const marginBottom = index === 6 ? "mb-2" : "";
+              return (
+                <View
+                  style={tw`flex flex-col  ${borderRadius} ${marginTop} ${marginBottom} shadow-md gap-40 w-70vw bg-white justify-start items-start mx-auto  p-3`}
+                >
+                  {item.icon ? (
+                    <ButtonHome
+                    borderRadius={borderRadius}
+                      marginTop={marginTop}
+                      text={item.name}
+                      icon={() => {
+                        return (
+                          <Feather name={item.icon} size={iconSize} style={tw`text-primary ml-3 mr-3`} />
+                        );
+                      }}
+                      onPress={() => {
+                        if (item.href) {
+                          router.push(item.href);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <ButtonHome
+                    borderRadius={borderRadius}
+                    marginTop={marginTop}
+                      isImage
+                      text={item.name}
+                      icon={item.image}
+                      onPress={() => {
+                        if (item.href) {
+                          router.push(item.href);
+                        }
+                      }}
+                    />
+                  )}
+                </View>
+              );
+            }}
+          />
+        </View>
+      </View>
     </SafeAreaView>
   );
 }

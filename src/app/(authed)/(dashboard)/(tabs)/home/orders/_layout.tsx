@@ -1,12 +1,18 @@
 import { MaterialTopTabs } from "@/components/TopTab";
 import tw from "@/config/tw";
-import React from "react";
-import { Dimensions } from "react-native";
+import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import React, { useState } from "react";
+import { Dimensions, Text } from "react-native";
+
 
 export default function _layout() {
+	const [activeTab, setActiveTab] = useState("pending"); // Estado para el tab activo
 
 	
 	return (
+
+		<>
+		
 		<MaterialTopTabs>
 			<MaterialTopTabs.Screen
 				name="pending"
@@ -52,5 +58,6 @@ export default function _layout() {
 				}}
 			/>
 		</MaterialTopTabs>
+		</>
 	);
 }

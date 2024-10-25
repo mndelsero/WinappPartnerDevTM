@@ -11,6 +11,7 @@ import { Stack, useSegments } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "react-query";
 
 export default function pending() {
@@ -49,16 +50,7 @@ export default function pending() {
 
 	return (
 		<>
-			<TouchableOpacity
-				onPress={() => {
-					refetch()
-				}}
-				style={tw`bg-blue-500 rounded-2xl px-4 py-2 mt-4 self-center z-10 elevation-4 shadow-2xl tablet:px-6 tablet:py-3 tablet:rounded-3xl`}
-			>
-				<Text style={tw`text-white font-bold tablet:text-xl`}>
-					Recargar
-				</Text>
-			</TouchableOpacity>
+			
 			<ScrollView style={tw`px-2  mt-4 flex-1`}>
 				<WithLoading isLoading={isFetching} error={isError}>
 					<View style={tw`flex gap-4 mb-4`}>
@@ -95,6 +87,20 @@ export default function pending() {
 					</View>
 				</WithLoading>
 			</ScrollView>
+			<SafeAreaView
+			style={tw`  absolute bottom-2 left-45% flex-row justify-center `}>
+			<TouchableOpacity
+				onPress={() => {
+					refetch()
+				}}
+				style={tw`bg-blue-500 mb-3 z-1 rounded-2xl px-4 py-2 mt-4 self-center z-10 elevation-4 shadow-2xl tablet:px-6 tablet:py-3 tablet:rounded-3xl`}
+			>
+				<Text style={tw`text-white font-bold tablet:text-xl`}>
+					Recargar
+				</Text>
+			</TouchableOpacity>
+    </SafeAreaView>
+			
 
 		</>
 	);

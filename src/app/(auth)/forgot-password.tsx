@@ -84,7 +84,7 @@ export default function CodeScreen() {
 
 	return (
 		<View style={[tw`bg-primary h-full`]}>
-			<View style={tw`bg-white mx-4 rounded-lg px-4 tablet:px-8 py-5 flex`}>
+			<View style={tw`bg-white mx-4 mt-2rem rounded-lg px-4 tablet:px-8 py-5 flex`}>
 				<Text
 					style={[
 						tw`text-primary font-bold tablet:text-3xl text-lg`,

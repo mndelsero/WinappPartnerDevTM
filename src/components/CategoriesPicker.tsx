@@ -21,8 +21,8 @@ export default function CategoriesPicker({
 		queryKey: "categories",
 		queryFn: async () => {
 			const token = await getToken();
-			const apiService = new ApiService(token ?? "");
-			const response = await apiService.getCategories(token?? "");
+			const apiService = new ApiService();
+			const response = await apiService.getBusinessCategories(token?? "");
 			const { productCategories } = await response.data;
 			return productCategories;
 

@@ -9,9 +9,13 @@ interface Props {
 	isImage?: boolean;
     isFirst?: boolean;
     isLast?: boolean;
+    marginTop:string;
+    borderRadius:string
 }
 export default function ButtonHome({
 	text,
+    marginTop,
+    borderRadius,
 	icon,
 	onPress,
 	isImage = false,
@@ -41,9 +45,9 @@ export default function ButtonHome({
         <TouchableOpacity
             activeOpacity={0.8}
             onPress={onPress}
-            style={tw`w-full h-8 bg-${background} rounded-3xl tablet:rounded-1/2 items-start justify-center mx-auto  tablet:w-56 tablet:h-56 tablet:mt-20`}
+            style={tw`w-full h-8 bg-${background}  ${borderRadius} rounded-3xl  tablet:rounded-1/2 items-start justify-center mx-auto  tablet:w-56 tablet:h-56 tablet:mt-20`}
         >
-            <View style={tw`flex-row items-center justify-start`}>
+            <View style={tw`flex-row w-full items-center gap-2rem px-1rem`}>
         {icon()}
         <Text style={tw`text-${color} font-bold text-base md:text-2xl tablet:text-4xl`}>
             {text}

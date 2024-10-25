@@ -22,7 +22,7 @@ interface OrderProps {
     quantity: number;
   }[];
   hasUsedCode: boolean;
-  type: number;
+  type: string;
   discount?: number;
   date: string;
   refetch?: () => void;
@@ -87,7 +87,7 @@ export default function HistoryOrder({
                 style={tw`text-gray-500 font-light text-lg tablet:text-2xl `}
               >
                 {/*  @ts-ignore */}
-                {hasUsedCode ? type === 1 && `${discount}%` : "No plica"}
+                {hasUsedCode ? type === 1 && `Tipo ${discount}%` : "No Aplica"}
               </Text>
             </View>
 
